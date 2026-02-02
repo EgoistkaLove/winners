@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reward System</title>
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#0b0b0b; color:#fff; overflow-x:hidden }
+    header { background:linear-gradient(90deg,#8b0000,#000); padding:15px 30px; display:flex; justify-content:space-between; align-items:center }
+    nav a { color:#fff; margin-right:20px; text-decoration:none; font-weight:bold }
+    nav a:hover { color:#ff3333 }
+    .container { padding:30px }
+
+    .profile { background:#111; border:1px solid #8b0000; padding:20px; border-radius:10px; margin-bottom:30px }
+
+    /* ===== DAILY REWARDS ===== */
+    .days-wrapper { overflow:hidden; position:relative }
+    .days-line {
+      display:flex;
+      gap:20px;
+      transition: transform .6s ease;
+    }
+    .reward {
+      min-width:180px;
+      background:#111;
+      border:2px solid #400;
+      border-radius:12px;
+      padding:15px;
+      text-align:center;
+      opacity:.4;
+      transform:scale(.9);
+      transition:.4s;
+    }
+    .reward.active { opacity:1; transform:scale(1); border-color:#c00 }
+    .reward.future { opacity:.7 }
+    .reward img { width:70px; height:70px; margin-bottom:10px }
+
+    .reward button {
+      margin-top:8px;
+      background:#8b0000;
+      border:none;
+      color:white;
+      padding:7px 12px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+    .reward button.issued { background:#333; cursor:default }
+
+    /* ===== ROULETTE ===== */
+    .roulette { margin-top:50px; text-align:center }
+    .wheel-wrapper { display:flex; justify-content:center; margin:20px 0 }
+
+    .wheel {
+      width:220px;
+      height:220px;
+      border-radius:50%;
+      border:6px solid #900;
+      background:conic-gradient(
+        #8b0000 0deg 60deg,
+        #111 60deg 120deg,
+        #c00000 120deg 180deg,
+        #111 180deg 240deg,
+        #a00000 240deg 300deg,
+        #111 300deg 360deg
+      );
+      transition: transform 1.4s cubic-bezier(.17,.67,.12,1);
+    }
+
+    .pointer {
+      width:0;height:0;
+      border-left:10px solid transparent;
+      border-right:10px solid transparent;
+      border-bottom:20px solid #ff3333;
+      margin:0 auto 10px;
+    }
+
+    .roulette button {
+      padding:10px 22px;
+      font-size:16px;
+      background:crimson;
+      border:none;
+      border-radius:8px;
+      color:#fff;
+      cursor:pointer;
+    }
+    .result { margin-top:15px; font-size:18px; color:#ff5555 }
+  </style>
+</head>
+<body>
+<header>
+  <div><b>🔥 RedBlack Site</b></div>
+  <nav>
+    <a href="#">Главная</a>
+    <a href="#">Награды</a>
+    <a href="#">Профиль</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="profile">
+    <h2>Профиль</h2>
+    <p>Логин: User123</p>
+    <p>Коины: <span id="coins">0</span></p>
+    <p>Опыт: <span id="exp">0</span></p>
+  </div>
+
+  <h2>🎁 Ежедневный вход (30 дней)</h2>
+  <div class="days-wrapper">
+    <div class="days-line" id="daysLine"></div>
+  </div>
+
+  <div class="roulette">
+    <h2>🎰 Рулетка</h2>
+    <div class="pointer"></div>
+    <div class="wheel-wrapper">
+      <div class="wheel" id="wheel"></div>
+    </div>
+    <button onclick="spinRoulette()">Крутить</button>
+    <div class="result" id="rouletteResult"></div>
+  </div>
+</div>
+
+<script>
+  let coins = Number(localStorage.getItem('coins')) || 0;
+  let exp = Number(localStorage.getItem('exp')) || 0;
+  let day = Number(localStorage.getItem('day')) || 1;
+
+  document.getElementById('coins').innerText = coins;
+  document.getElementById('exp').innerText = exp;
+
+  const daysLine = document.getElementById('daysLine');
+
+  // ===== IMAGE URL CONFIG =====
+  const IMG = {
+    coins: 'https://files.cs2red.ru/public/bp/6945335.webp',
+    exp: 'https://files.cs2red.ru/public/bp/9023829.webp',
+    rub: 'https://files.cs2red.ru/public/bp/8292703.webp',
+    sub: 'https://files.cs2red.ru/public/bp_summer_2025/PLUS_red.png',
+    chest: 'https://files.cs2red.ru/public/pages/stats/case-coins.png',
+    random: 'https://i.pinimg.com/736x/cd/c4/df/cdc4dff4d8884b698fb03036532da9a8.jpg'
+  };
+
+  const rewards = Array.from({length:30},(_,i)=>({({length:30},(_,i)=>({
+    day:i+1,
+    text: i+1===1?'5₽':i+1===2?'100 коинов':i+1===3?'100 XP':i+1===7?'Подписка +2 дня':'Случайная награда',
+    img:'https://via.placeholder.com/70?text=D'+(i+1)
+  }));
+
+  rewards.forEach(r=>{
+    const div=document.createElement('div');
+    div.className='reward'+(r.day===day?' active':r.day>day?' future':'');
+    div.innerHTML=`<img src="${r.img}"><h4>День ${r.day}</h4><p>${r.text}</p>`;
+
+    if(r.day<day){
+      div.innerHTML+=`<button class="issued">Выдано</button>`;
+    } else if(r.day===day){
+      div.innerHTML+=`<button onclick="claim()">Получить</button>`;
+    }
+    daysLine.appendChild(div);
+  });
+
+  function claim(){
+    coins+=100;
+    day++;
+    localStorage.setItem('coins',coins);
+    localStorage.setItem('day',day);
+    location.reload();
+  }
+
+  // ===== ROULETTE =====
+  const rouletteRewards=['50 коинов','100 коинов','5₽','200 XP','Ничего','500 коинов'];
+  let angle=0;
+
+  function spinRoulette(){
+    const wheel=document.getElementById('wheel');
+    const rand=Math.floor(Math.random()*rouletteRewards.length);
+    angle+=1080+rand*60;
+    wheel.style.transform=`rotate(${angle}deg)`;
+    setTimeout(()=>{
+      document.getElementById('rouletteResult').innerText='Вы выиграли: '+rouletteRewards[rand];
+    },1300);
+  }
+
+  // scroll animation to current day
+  const offset=(day-1)*200;
+  daysLine.style.transform=`translateX(-${offset}px)`;
+</script>
+</body>
+</html>
