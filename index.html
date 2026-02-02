@@ -4,134 +4,29 @@
   <meta charset="UTF-8">
   <title>RedBlack Site</title>
   <style>
-    body{
-      margin:0;
-      font-family:Arial, sans-serif;
-      background:#0b0b0b;
-      color:#fff;
-    }
-    header{
-      background:linear-gradient(90deg,#8b0000,#000);
-      padding:15px 30px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-    nav a{
-      color:#fff;
-      margin-left:20px;
-      text-decoration:none;
-      font-weight:bold;
-    }
+    body{margin:0;font-family:Arial,sans-serif;background:#0b0b0b;color:#fff}
+    header{background:linear-gradient(90deg,#8b0000,#000);padding:15px 30px;display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#fff;margin-left:20px;text-decoration:none;font-weight:bold}
     nav a:hover{color:#ff3333}
-
     .container{padding:30px}
+    .profile{background:#111;border:1px solid #8b0000;border-radius:12px;padding:20px;margin-bottom:30px}
 
-    .profile{
-      background:#111;
-      border:1px solid #8b0000;
-      border-radius:12px;
-      padding:20px;
-      margin-bottom:30px;
-    }
-
-    /* ===== DAILY REWARDS ===== */
-    .days-wrapper{
-      overflow-x:auto;
-      overflow-y:hidden;
-      padding:15px 0;
-    }
-
+    .days-wrapper{overflow-x:auto;padding:15px 0}
     .days-wrapper::-webkit-scrollbar{height:6px}
     .days-wrapper::-webkit-scrollbar-thumb{background:#8b0000;border-radius:10px}
+    .days-line{display:flex;gap:20px}
 
-    .days-line{
-      display:flex;
-      gap:20px;
-    }
-
-    .reward{
-      min-width:180px;
-      background:#111;
-      border:2px solid #300;
-      border-radius:14px;
-      padding:15px;
-      text-align:center;
-      opacity:.5;
-      transform:scale(.95);
-      transition:.3s;
-    }
-
-    .reward.active{
-      opacity:1;
-      transform:scale(1);
-      border-color:#c00;
-      box-shadow:0 0 20px #800;
-    }
-
+    .reward{min-width:190px;background:#111;border:2px solid #300;border-radius:14px;padding:15px;text-align:center;opacity:.5;transform:scale(.95);transition:.3s}
+    .reward.active{opacity:1;transform:scale(1);border-color:#c00;box-shadow:0 0 20px #800}
     .reward.future{opacity:.8}
+    .reward img{width:70px;height:70px;object-fit:contain;margin-bottom:10px}
+    .reward button{margin-top:10px;padding:7px 14px;background:#8b0000;border:none;border-radius:6px;color:#fff;cursor:pointer}
+    .reward button.issued{background:#333;cursor:default}
 
-    .reward img{
-      width:70px;
-      height:70px;
-      object-fit:contain;
-      margin-bottom:10px;
-    }
-
-    .reward button{
-      margin-top:10px;
-      padding:7px 14px;
-      background:#8b0000;
-      border:none;
-      border-radius:6px;
-      color:#fff;
-      cursor:pointer;
-    }
-
-    .reward button.issued{
-      background:#333;
-      cursor:default;
-    }
-
-    /* ===== ROULETTE ===== */
     .roulette{margin-top:60px;text-align:center}
-
-    .pointer{
-      width:0;height:0;
-      border-left:10px solid transparent;
-      border-right:10px solid transparent;
-      border-bottom:20px solid #ff3333;
-      margin:0 auto 10px;
-    }
-
-    .wheel{
-      width:220px;
-      height:220px;
-      border-radius:50%;
-      margin:0 auto;
-      border:6px solid #900;
-      background:conic-gradient(
-        #8b0000 0deg 60deg,
-        #111 60deg 120deg,
-        #c00000 120deg 180deg,
-        #111 180deg 240deg,
-        #a00000 240deg 300deg,
-        #111 300deg 360deg
-      );
-      transition:transform 1.3s cubic-bezier(.17,.67,.12,1);
-    }
-
-    .roulette button{
-      margin-top:20px;
-      padding:10px 24px;
-      background:crimson;
-      border:none;
-      border-radius:8px;
-      color:#fff;
-      font-size:16px;
-      cursor:pointer;
-    }
-
+    .pointer{width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:20px solid #ff3333;margin:0 auto 10px}
+    .wheel{width:220px;height:220px;border-radius:50%;margin:0 auto;border:6px solid #900;background:conic-gradient(#8b0000 0deg 60deg,#111 60deg 120deg,#c00000 120deg 180deg,#111 180deg 240deg,#a00000 240deg 300deg,#111 300deg 360deg);transition:transform 1.3s cubic-bezier(.17,.67,.12,1)}
+    .roulette button{margin-top:20px;padding:10px 24px;background:crimson;border:none;border-radius:8px;color:#fff;font-size:16px;cursor:pointer}
     .result{margin-top:15px;font-size:18px;color:#ff5555}
   </style>
 </head>
@@ -154,9 +49,7 @@
   </div>
 
   <h2>🎁 Ежедневный вход (30 дней)</h2>
-  <div class="days-wrapper">
-    <div class="days-line" id="daysLine"></div>
-  </div>
+  <div class="days-wrapper"><div class="days-line" id="daysLine"></div></div>
 
   <div class="roulette">
     <h2>🎰 Рулетка</h2>
@@ -168,14 +61,13 @@
 </div>
 
 <script>
-  // ===== IMAGE URL CONFIG =====
+  /* ===== IMAGE URL CONFIG ===== */
   const IMG={
     coins: 'https://files.cs2red.ru/public/bp/6945335.webp',
     exp: 'https://files.cs2red.ru/public/bp/9023829.webp',
     rub: 'https://files.cs2red.ru/public/bp/8292703.webp',
     sub: 'https://files.cs2red.ru/public/bp_summer_2025/PLUS_red.png',
-    chest: 'https://files.cs2red.ru/public/pages/stats/case-coins.png',
-    random: 'https://i.pinimg.com/736x/cd/c4/df/cdc4dff4d8884b698fb03036532da9a8.jpg'
+    chest: 'https://files.cs2red.ru/public/pages/stats/case-coins.png'
   };
 
   let coins=Number(localStorage.getItem('coins'))||0;
@@ -187,16 +79,54 @@
 
   const daysLine=document.getElementById('daysLine');
 
-  const rewards=Array.from({length:30},(_,i)=>({
-    day:i+1,
-    text:i+1===1?'5₽':i+1===2?'100 коинов':i+1===3?'100 XP':i+1===6?'Шкатулка':i+1===7?'Подписка +2 дня':'Случайная награда',
-    img:i+1===1?IMG.rub:
-        i+1===2?IMG.coins:
-        i+1===3?IMG.exp:
-        i+1===6?IMG.chest:
-        i+1===7?IMG.sub:
-        IMG.random
-  }));
+  /* ===== REWARD LOGIC ===== */
+  function getRewardForDay(d){
+    if(d<=7){
+      const base=[
+        {text:'5₽',type:'rub',value:5},
+        {text:'100 коинов',type:'coins',value:100},
+        {text:'100 XP',type:'exp',value:100},
+        {text:'500 коинов',type:'coins',value:500},
+        {text:'10₽',type:'rub',value:10},
+        {text:'Шкатулка',type:'chest',value:1},
+        {text:'Подписка +2 дня',type:'sub',value:2}
+      ];
+      return base[d-1];
+    }
+
+    // после 7 дня — прогрессивный рандом
+    const pool=[];
+    pool.push({text:`${200+d*5} XP`,type:'exp',value:200+d*5});
+    pool.push({text:`${500+d*20} коинов`,type:'coins',value:500+d*20});
+
+    if(d>10) pool.push({text:'Шкатулка',type:'chest',value:1});
+    if(d>15) pool.push({text:`${20+Math.floor(d/2)}₽`,type:'rub',value:20+Math.floor(d/2)});
+    if(d>20) pool.push({text:'Подписка +2 дня',type:'sub',value:2});
+
+    if(d>=27){
+      pool.length=0;
+      pool.push(
+        {text:'50₽',type:'rub',value:50},
+        {text:'5000 коинов',type:'coins',value:5000},
+        {text:'300 XP',type:'exp',value:300},
+        {text:'Подписка +2 дня',type:'sub',value:2},
+        {text:'Шкатулка',type:'chest',value:1}
+      );
+    }
+
+    return pool[Math.floor(Math.random()*pool.length)];
+  }
+
+  const rewards=Array.from({length:30},(_,i)=>{
+    const r=getRewardForDay(i+1);
+    return{
+      day:i+1,
+      text:r.text,
+      type:r.type,
+      value:r.value,
+      img:IMG[r.type]
+    };
+  });
 
   rewards.forEach(r=>{
     const div=document.createElement('div');
@@ -204,25 +134,27 @@
     div.innerHTML=`<img src="${r.img}"><h4>День ${r.day}</h4><p>${r.text}</p>`;
 
     if(r.day<day){
-      div.innerHTML+=`<button class="issued">Выдано</button>`;
+      div.innerHTML+='<button class="issued">Выдано</button>';
     }else if(r.day===day){
-      div.innerHTML+=`<button onclick="claim()">Получить</button>`;
+      div.innerHTML+='<button onclick="claim()">Получить</button>';
     }
     daysLine.appendChild(div);
   });
 
   function claim(){
-    coins+=100;
+    const r=rewards[day-1];
+    if(r.type==='coins') coins+=r.value;
+    if(r.type==='exp') exp+=r.value;
     day++;
     localStorage.setItem('coins',coins);
+    localStorage.setItem('exp',exp);
     localStorage.setItem('day',day);
     location.reload();
   }
 
-  // ===== ROULETTE =====
+  /* ===== ROULETTE ===== */
   const rouletteRewards=['50 коинов','100 коинов','5₽','200 XP','Ничего','500 коинов'];
   let angle=0;
-
   function spinRoulette(){
     const wheel=document.getElementById('wheel');
     const rand=Math.floor(Math.random()*rouletteRewards.length);
