@@ -43,9 +43,9 @@
 <div class="container">
   <div class="profile">
     <h2>Профиль</h2>
-    <p>Логин: User123</p>
+    <p> Egoistka </p>
     <p>Коины: <span id="coins">0</span></p>
-    <p>Опыт: <span id="exp">0</span></p>
+    <p>MMR: <span id="exp">0</span></p>
   </div>
 
   <h2>🎁 Ежедневный вход (30 дней)</h2>
@@ -154,29 +154,17 @@
 
   /* ===== ROULETTE ===== */
   const rouletteRewards = [
-{ text: '50 коинов' },
-{ text: '100 коинов' },
-{ text: '5₽' },
-{ text: '200 XP' },
-{ text: 'Ничего' },
-{ text: '500 коинов' }
-];
-
-
-let angle = 0;
-
-
-function spinRoulette() {
-const wheel = document.getElementById('wheel');
-const rand = Math.floor(Math.random() * rouletteRewards.length);
-angle += 1080 + rand * 60;
-wheel.style.transform = `rotate(${angle}deg)`;
-
-
-setTimeout(() => {
-document.getElementById('rouletteResult').innerText = 'Вы выиграли: ' + rouletteRewards[rand].text;
-}, 1200);
-}
+const rouletteRewards=['50 коинов','100 коинов','5 рублей','100 XP','1 рубль','500 коинов','1000 коинов',' 10 рублей','3 рубля','Medium 4 часа','Lite 10 часов','шкатулка'];
+  let angle=0;
+  function spinRoulette(){
+    const wheel=document.getElementById('wheel');
+    const rand=Math.floor(Math.random()*rouletteRewards.length);
+    angle+=1080+rand*60;
+    wheel.style.transform=`rotate(${angle}deg)`;
+    setTimeout(()=>{
+      document.getElementById('rouletteResult').innerText='Вы выиграли: '+rouletteRewards[rand];
+    },1200);
+  }
 </script>
 </body>
 </html>
