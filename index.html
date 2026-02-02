@@ -153,17 +153,30 @@
   }
 
   /* ===== ROULETTE ===== */
-  const rouletteRewards=['50 коинов','100 коинов','5₽','200 XP','Ничего','500 коинов'];
-  let angle=0;
-  function spinRoulette(){
-    const wheel=document.getElementById('wheel');
-    const rand=Math.floor(Math.random()*rouletteRewards.length);
-    angle+=1080+rand*60;
-    wheel.style.transform=`rotate(${angle}deg)`;
-    setTimeout(()=>{
-      document.getElementById('rouletteResult').innerText='Вы выиграли: '+rouletteRewards[rand];
-    },1200);
-  }
+  const rouletteRewards = [
+{ text: '50 коинов' },
+{ text: '100 коинов' },
+{ text: '5₽' },
+{ text: '200 XP' },
+{ text: 'Ничего' },
+{ text: '500 коинов' }
+];
+
+
+let angle = 0;
+
+
+function spinRoulette() {
+const wheel = document.getElementById('wheel');
+const rand = Math.floor(Math.random() * rouletteRewards.length);
+angle += 1080 + rand * 60;
+wheel.style.transform = `rotate(${angle}deg)`;
+
+
+setTimeout(() => {
+document.getElementById('rouletteResult').innerText = 'Вы выиграли: ' + rouletteRewards[rand].text;
+}, 1200);
+}
 </script>
 </body>
 </html>
